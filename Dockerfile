@@ -1,19 +1,5 @@
 # Stage 1: Build the Flutter web application
-FROM debian:latest AS build-env
-
-# Instalar dependências necessárias
-RUN apt-get update && \
-    apt-get install -y curl git wget unzip libgconf-2-4 gdb libstdc++6 libglu1-mesa fonts-droid-fallback python3 && \
-    apt-get clean
-
-# Clonar o repositório do Flutter (versão stable)
-RUN git clone https://github.com/flutter/flutter.git /usr/local/flutter -b stable
-
-# Configurar o path do Flutter
-ENV PATH="/usr/local/flutter/bin:/usr/local/flutter/bin/cache/dart-sdk/bin:${PATH}"
-
-# Habilitar o suporte web e atualizar o Flutter
-RUN flutter config --enable-web
+FROM ghcr.io/cirruslabs/flutter:stable AS build-env
 
 # Configurar o diretório de trabalho
 WORKDIR /app
