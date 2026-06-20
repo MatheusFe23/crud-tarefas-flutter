@@ -1,10 +1,25 @@
 # Stage 1: Build the Flutter web application
-FROM ghcr.io/cirruslabs/flutter:stable AS build-env
+FROM debian:bullseye-slim AS build-env
+
+# Instalar apenas dependências estritamente necessárias para a web (evita sobrecarregar o espaço em disco)
+RUN apt-get update && \
+    apt-get install -y curl git wget unzip ca-certificates && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# Clonar o repositório do Flutter
+RUN git clone https://github.com/flutter/flutter.git /usr/local/flutter -b stable
+
+# Configurar o path do Flutter
+ENV PATH="/usr/local/flutter/bin:/usr/local/flutter/bin/cache/dart-sdk/bin:${PATH}"
+
+# Habilitar suporte a web
+RUN flutter config --enable-web
 
 # Configurar o diretório de trabalho
 WORKDIR /app
 
-# Copiar os arquivos de manifesto e baixar as dependências (melhora o cache do Docker)
+# Copiar os arquivos de manifesto e baixar as dependências
 COPY pubspec.* ./
 RUN flutter pub get
 
